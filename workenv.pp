@@ -62,7 +62,10 @@ $vm_envs = [
             'iputils',
             'screen',
             ]
-package { $vm_envs: ensure => 'installed' }
+package { 
+  $vm_envs: ensure => 'installed' ,
+  before => User['aphilipsenburg'],
+  }
 
 ##
 # Some eye candy

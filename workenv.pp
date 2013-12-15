@@ -3,8 +3,9 @@ zypprepo { "Packman Repository":
   autorefresh  => 1,
   baseurl      => 'http://ftp.gwdg.de/pub/linux/packman/suse/openSUSE_13.1/',
   type         => 'rpm-md',
+  gpgcheck     => 0,
   keeppackages => 0,
-  before       => Package['basePackages'],
+  before       => Package['basePackages'],  
 }
 
 zypprepo { "namtrac:subpixel":
@@ -12,6 +13,7 @@ zypprepo { "namtrac:subpixel":
   autorefresh  => 1,
   baseurl      => "http://download.opensuse.org/repositories/home:/namtrac:/subpixel/openSUSE_13.1/",
   type         => 'rpm-md',
+  gpgcheck     => 0,
   keeppackages => 0,
   before       => Package['basePackages'],
 }
@@ -22,9 +24,15 @@ zypprepo { "VirtualBox":
   baseurl      => "http://download.virtualbox.org/virtualbox/rpm/opensuse/12.3",
   type         => 'yum',
   keeppackages => 0,
-  gpgcheck     => 1,
-  gpgkey       => 'http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc',
+  gpgcheck     => 0,
   priority     => 120,
+  before       => Package['basePackages'],
+}
+
+exec { 'upgrade-to-repos':
+  command      => '/usr/bin/zypper --non-interactive dup -l --recommends',
+#   path         => ['/usr/bin/',],
+  user         => 'root',
   before       => Package['basePackages'],
 }
 
@@ -34,10 +42,10 @@ $basePkgs = [
               'kernel-devel',
               ]
 package { 'basePackages': 
-	name => $basePkgs,
-	ensure => 'installed' 
-	}
-
+  name => $basePkgs,
+  ensure => 'installed',
+  require => Exec['upgrade-to-repos'],
+}
 
 $editorsPkgs = [
             'emacs',
@@ -93,6 +101,7 @@ $looknfeel = [
               'faenza-icon-theme-dark',
               'faenza-icon-theme-darker',
               'faenza-icon-theme-darkest',
+              'fontconfig-infinality',             
               ]
 package { 'lnfPkgs': 
 	name => $looknfeel,
@@ -136,24 +145,11 @@ $comPkgs = [
             'pidgin-otr',
             'pidgin-plugin-pack',
             'pidgin-plugin-pack-extras',        
-           ]
+]
+
 package { 'comPkgs':
 	name => $comPkgs,
 	ensure => 'installed',
-	require => Package['basePackages'],
-	}
-##
-# Trashcan. Stuff that's installed, but we don't want.
-##
-$trashPkgs = [
-             'rhythmbox',
-             'evolution',
-             'empathy',
-             'libzeitgeist-2_0-0',          
-             ]
-package { 'trashPkgs':
-	name => $trashPkgs,
-	ensure => 'uninstalled',
 	require => Package['basePackages'],
 	}
 

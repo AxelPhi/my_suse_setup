@@ -1,3 +1,6 @@
+##
+# Repositories we want
+##
 zypprepo { "Packman Repository":
   enabled      => 1,
   autorefresh  => 1,
@@ -31,34 +34,47 @@ zypprepo { "VirtualBox":
 
 exec { 'upgrade-to-repos':
   command      => '/usr/bin/zypper --non-interactive dup -l --recommends',
-#   path         => ['/usr/bin/',],
   user         => 'root',
   before       => Package['basePackages'],
 }
 
+
+##
+# Some basic packages, just to make sure
+##
 $basePkgs = [
-              'gcc',
-              'make',
-              'kernel-devel',
-              ]
+             'gcc',
+             'make',
+             'kernel-devel',
+             ]
+
 package { 'basePackages': 
   name => $basePkgs,
   ensure => 'installed',
   require => Exec['upgrade-to-repos'],
 }
 
-$editorsPkgs = [
-            'emacs',
-            'emacs-nox',
-            'emacs-el',
-            'emacs-info',
-            ]
-package { 'editorsPkgs': 
-	name => $editorsPkgs,
-	ensure => 'installed',
-	require => Package['basePackages'], 
-	}
 
+##
+# Editors
+##
+$editorsPkgs = [
+                'emacs',
+                'emacs-nox',
+                'emacs-el',
+                'emacs-info',
+                ]
+
+package { 'editorsPkgs': 
+  name => $editorsPkgs,
+  ensure => 'installed',
+  require => Package['basePackages'], 
+}
+
+
+##
+# Everything for terminal work
+##
 $terminal_toolbox = [
                      'terminator',
                      'mc',
@@ -69,27 +85,31 @@ $terminal_toolbox = [
                      'pixz',
                      'pbzip2',                     
                      ]
+
 package { 'terminalPkgs': 
-	name => $terminal_toolbox,
-	ensure => 'installed',
-	require => Package['basePackages'], }
+  name => $terminal_toolbox,
+  ensure => 'installed',
+  require => Package['basePackages'],
+}
+
 
 ##
 # VMs and other environment handling
 ##
 $vmPkgs = [
-            'VirtualBox-4.3',
-            'lxc',
-            'bridge-utils',
-            'iputils',
-            'screen',
-            ]
+           'VirtualBox-4.3',
+           'lxc',
+           'bridge-utils',
+           'iputils',
+           'screen',
+           ]
 package { 'vmPkgs':
   name => $vmPkgs,
   ensure => 'installed',
   require => Package['basePackages'],
   before => User['aphilipsenburg'],
-  }
+}
+
 
 ##
 # Some eye candy
@@ -104,9 +124,11 @@ $looknfeel = [
               'fontconfig-infinality',             
               ]
 package { 'lnfPkgs': 
-	name => $looknfeel,
-	ensure => 'installed',
-	require => Package['basePackages'], }
+  name => $looknfeel,
+  ensure => 'installed',
+  require => Package['basePackages'],
+}
+
 
 ##
 # Dev tools
@@ -119,9 +141,11 @@ $devtools = [
              'kdiff3',
              ]
 package { 'devToolsPkgs': 
-	name => $devtools,
-	ensure => 'installed',
-	require => Package['basePackages'], }
+  name => $devtools,
+  ensure => 'installed',
+  require => Package['basePackages'],
+}
+
 
 ##
 # Programming environments
@@ -131,9 +155,11 @@ $devenvs = [
             'python-virtualenvwrapper',
             ]
 package { 'devEnvPkgs':
-	name => $devenvs,
-	ensure => 'installed',
-	require => Package['basePackages'], }
+  name => $devenvs,
+  ensure => 'installed',
+  require => Package['basePackages'],
+}
+
 
 ##
 # Communications
@@ -145,14 +171,18 @@ $comPkgs = [
             'pidgin-otr',
             'pidgin-plugin-pack',
             'pidgin-plugin-pack-extras',        
-]
+            ]
 
 package { 'comPkgs':
-	name => $comPkgs,
-	ensure => 'installed',
-	require => Package['basePackages'],
-	}
+  name => $comPkgs,
+  ensure => 'installed',
+  require => Package['basePackages'],
+}
 
+
+##
+# Make sure we are members of the important groups
+##
 user { "aphilipsenburg":
   ensure     => 'present',
   forcelocal => true,

@@ -3,7 +3,8 @@ zypprepo { "Packman Repository":
   autorefresh  => 1,
   baseurl      => 'http://ftp.gwdg.de/pub/linux/packman/suse/openSUSE_13.1/',
   type         => 'rpm-md',
-  keeppackages => 0
+  keeppackages => 0,
+  before       => Package['basePackages'],
 }
 
 zypprepo { "namtrac:subpixel":
@@ -11,7 +12,8 @@ zypprepo { "namtrac:subpixel":
   autorefresh  => 1,
   baseurl      => "http://download.opensuse.org/repositories/home:/namtrac:/subpixel/openSUSE_13.1/",
   type         => 'rpm-md',
-  keeppackages => 0
+  keeppackages => 0,
+  before       => Package['basePackages'],
 }
 
 zypprepo { "VirtualBox":
@@ -23,22 +25,31 @@ zypprepo { "VirtualBox":
   gpgcheck     => 1,
   gpgkey       => 'http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc',
   priority     => 120,
+  before       => Package['basePackages'],
 }
 
-$base_pkgs = [
+$basePkgs = [
               'gcc',
               'make',
               'kernel-devel',
               ]
-package { $base_pkgs: ensure => 'installed' }
+package { 'basePackages': 
+	name => $basePkgs,
+	ensure => 'installed' 
+	}
 
-$editors = [
+
+$editorsPkgs = [
             'emacs',
             'emacs-nox',
             'emacs-el',
             'emacs-info',
             ]
-package { $editors: ensure => 'installed' }
+package { 'editorsPkgs': 
+	name => $editorsPkgs,
+	ensure => 'installed',
+	require => Package['basePackages'], 
+	}
 
 $terminal_toolbox = [
                      'terminator',
@@ -50,20 +61,25 @@ $terminal_toolbox = [
                      'pixz',
                      'pbzip2',                     
                      ]
-package { $terminal_toolbox: ensure => 'installed' }
+package { 'terminalPkgs': 
+	name => $terminal_toolbox,
+	ensure => 'installed',
+	require => Package['basePackages'], }
 
 ##
 # VMs and other environment handling
 ##
-$vm_envs = [
+$vmPkgs = [
             'VirtualBox-4.3',
             'lxc',
             'bridge-utils',
             'iputils',
             'screen',
             ]
-package { 
-  $vm_envs: ensure => 'installed' ,
+package { 'vmPkgs':
+  name => $vmPkgs,
+  ensure => 'installed',
+  require => Package['basePackages'],
   before => User['aphilipsenburg'],
   }
 
@@ -78,7 +94,10 @@ $looknfeel = [
               'faenza-icon-theme-darker',
               'faenza-icon-theme-darkest',
               ]
-package { $looknfeel: ensure => 'installed' }
+package { 'lnfPkgs': 
+	name => $looknfeel,
+	ensure => 'installed',
+	require => Package['basePackages'], }
 
 ##
 # Dev tools
@@ -90,7 +109,10 @@ $devtools = [
              'subversion',
              'kdiff3',
              ]
-package { $devtools: ensure => 'installed' }
+package { 'devToolsPkgs': 
+	name => $devtools,
+	ensure => 'installed',
+	require => Package['basePackages'], }
 
 ##
 # Programming environments
@@ -99,7 +121,10 @@ $devenvs = [
             'python',
             'python-virtualenvwrapper',
             ]
-package { $devenvs: ensure => 'installed' }
+package { 'devEnvPkgs':
+	name => $devenvs,
+	ensure => 'installed',
+	require => Package['basePackages'], }
 
 ##
 # Communications
@@ -112,6 +137,11 @@ $comPkgs = [
             'pidgin-plugin-pack',
             'pidgin-plugin-pack-extras',        
            ]
+package { 'comPkgs':
+	name => $comPkgs,
+	ensure => 'installed',
+	require => Package['basePackages'],
+	}
 ##
 # Trashcan. Stuff that's installed, but we don't want.
 ##
@@ -121,13 +151,17 @@ $trashPkgs = [
              'empathy',
              'libzeitgeist-2_0-0',          
              ]
+package { 'trashPkgs':
+	name => $trashPkgs,
+	ensure => 'uninstalled',
+	require => Package['basePackages'],
+	}
 
 user { "aphilipsenburg":
   ensure     => 'present',
   forcelocal => true,
   groups     => [
                  'disk',
-                 'vboxsf',
                  'vboxusers',
                  'users',
                  'video',

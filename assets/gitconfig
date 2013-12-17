@@ -1,0 +1,9 @@
+[user]
+	name = Axel Philipsenburg
+	email = axel@wired-space.de
+[core]
+	editor = emacs
+[merge]
+	tool = kdiff3
+[color]
+	ui = auto

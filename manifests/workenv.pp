@@ -121,7 +121,10 @@ $looknfeel = [
               'faenza-icon-theme-dark',
               'faenza-icon-theme-darker',
               'faenza-icon-theme-darkest',
-              'fontconfig-infinality',             
+              'fontconfig-infinality',
+              'gtk2-engine-murrine',
+              'gtk2-engine-murrine-32bit',
+              'gtk3-engine-unico',
               ]
 package { 'lnfPkgs': 
   name => $looknfeel,

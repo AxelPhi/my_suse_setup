@@ -156,6 +156,7 @@ package { 'devToolsPkgs':
 $devenvs = [
             'python',
             'python-virtualenvwrapper',
+            'python-devel',
             ]
 package { 'devEnvPkgs':
   name => $devenvs,
